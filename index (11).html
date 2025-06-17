@@ -1,0 +1,846 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JBHT - Black Hat Tourqe</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#00FF41',secondary:'#1A1A1A'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=VT323&family=Pacifico&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+.perspective {
+perspective: 1000px;
+transform-style: preserve-3d;
+}
+body {
+background-color: #000000;
+color: #ffffff;
+font-family: 'VT323', monospace;
+overflow-x: hidden;
+}
+h1, h2, h3, h4, h5, h6, .orbitron {
+font-family: 'Orbitron', sans-serif;
+}
+.matrix-bg {
+position: relative;
+overflow: hidden;
+}
+.matrix-bg::before {
+content: "";
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.95)),
+url('https://readdy.ai/api/search-image?query=digital%20matrix%20code%20background%20with%20green%20binary%20numbers%20flowing%2C%20cyberpunk%20style%2C%20high%20tech%2C%20digital%20rain%20effect%2C%20dark%20background%20with%20glowing%20green%20elements%2C%20abstract%20technology%20concept&width=1920&height=1080&seq=matrix001&orientation=landscape');
+background-size: cover;
+background-position: center;
+opacity: 0.15;
+z-index: -1;
+}
+.neon-glow {
+text-shadow: 0 0 5px rgba(0, 255, 65, 0.5), 0 0 10px rgba(0, 255, 65, 0.3), 0 0 15px rgba(0, 255, 65, 0.2);
+}
+.neon-box {
+box-shadow: 0 0 5px rgba(0, 255, 65, 0.5), 0 0 10px rgba(0, 255, 65, 0.3);
+}
+.neon-border {
+position: relative;
+}
+.neon-border::after {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+border: 1px solid #00FF41;
+box-shadow: 0 0 5px rgba(0, 255, 65, 0.5), 0 0 10px rgba(0, 255, 65, 0.3);
+pointer-events: none;
+border-radius: inherit;
+}
+.glitch {
+position: relative;
+}
+.glitch::before, .glitch::after {
+content: attr(data-text);
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+}
+.glitch::before {
+left: 2px;
+text-shadow: -1px 0 #00FFFF;
+clip: rect(44px, 450px, 56px, 0);
+animation: glitch-anim-1 5s linear infinite alternate-reverse;
+}
+.glitch::after {
+left: -2px;
+text-shadow: -1px 0 #FF00FF;
+clip: rect(24px, 450px, 100px, 0);
+animation: glitch-anim-2 4s linear infinite alternate-reverse;
+}
+@keyframes glitch-anim-1 {
+0% { clip: rect(20px, 450px, 39px, 0); }
+5% { clip: rect(36px, 450px, 92px, 0); }
+10% { clip: rect(54px, 450px, 5px, 0); }
+15% { clip: rect(37px, 450px, 92px, 0); }
+20% { clip: rect(26px, 450px, 13px, 0); }
+25% { clip: rect(67px, 450px, 97px, 0); }
+30% { clip: rect(33px, 450px, 65px, 0); }
+35% { clip: rect(18px, 450px, 57px, 0); }
+40% { clip: rect(10px, 450px, 8px, 0); }
+45% { clip: rect(15px, 450px, 75px, 0); }
+50% { clip: rect(63px, 450px, 17px, 0); }
+55% { clip: rect(14px, 450px, 34px, 0); }
+60% { clip: rect(43px, 450px, 23px, 0); }
+65% { clip: rect(71px, 450px, 88px, 0); }
+70% { clip: rect(39px, 450px, 46px, 0); }
+75% { clip: rect(82px, 450px, 72px, 0); }
+80% { clip: rect(45px, 450px, 16px, 0); }
+85% { clip: rect(86px, 450px, 75px, 0); }
+90% { clip: rect(36px, 450px, 85px, 0); }
+95% { clip: rect(46px, 450px, 64px, 0); }
+100% { clip: rect(23px, 450px, 31px, 0); }
+}
+@keyframes glitch-anim-2 {
+0% { clip: rect(39px, 450px, 53px, 0); }
+5% { clip: rect(47px, 450px, 30px, 0); }
+10% { clip: rect(86px, 450px, 74px, 0); }
+15% { clip: rect(23px, 450px, 59px, 0); }
+20% { clip: rect(30px, 450px, 14px, 0); }
+25% { clip: rect(58px, 450px, 53px, 0); }
+30% { clip: rect(76px, 450px, 81px, 0); }
+35% { clip: rect(46px, 450px, 21px, 0); }
+40% { clip: rect(12px, 450px, 17px, 0); }
+45% { clip: rect(76px, 450px, 85px, 0); }
+50% { clip: rect(35px, 450px, 47px, 0); }
+55% { clip: rect(56px, 450px, 81px, 0); }
+60% { clip: rect(17px, 450px, 69px, 0); }
+65% { clip: rect(79px, 450px, 45px, 0); }
+70% { clip: rect(26px, 450px, 31px, 0); }
+75% { clip: rect(57px, 450px, 21px, 0); }
+80% { clip: rect(42px, 450px, 94px, 0); }
+85% { clip: rect(84px, 450px, 75px, 0); }
+90% { clip: rect(36px, 450px, 85px, 0); }
+95% { clip: rect(46px, 450px, 64px, 0); }
+100% { clip: rect(67px, 450px, 91px, 0); }
+}
+.typing-effect::after {
+content: '|';
+animation: blink 1s infinite;
+}
+@keyframes blink {
+0%, 100% { opacity: 1; }
+50% { opacity: 0; }
+}
+.service-card {
+transition: all 0.3s ease;
+background: rgba(26, 26, 26, 0.7);
+border: 1px solid rgba(0, 255, 65, 0.1);
+}
+.service-card:hover {
+transform: translateY(-5px);
+border-color: #00FF41;
+box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+}
+.service-card:hover .service-icon {
+color: #00FF41;
+transform: scale(1.1);
+}
+.service-icon {
+transition: all 0.3s ease;
+}
+.floating-whatsapp {
+position: fixed;
+bottom: 30px;
+right: 30px;
+z-index: 100;
+animation: pulse 2s infinite;
+}
+@keyframes pulse {
+0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 255, 65, 0.7); }
+70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(0, 255, 65, 0); }
+100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 255, 65, 0); }
+}
+.terminal-text {
+position: relative;
+display: inline-block;
+overflow: hidden;
+white-space: nowrap;
+border-right: 2px solid #00FF41;
+animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+}
+@keyframes typing {
+from { width: 0 }
+to { width: 100% }
+}
+@keyframes blink-caret {
+from, to { border-color: transparent }
+50% { border-color: #00FF41 }
+}
+.cursor-trail {
+position: fixed;
+width: 5px;
+height: 5px;
+border-radius: 50%;
+background-color: rgba(0, 255, 65, 0.7);
+pointer-events: none;
+z-index: 9999;
+transform: translate(-50%, -50%);
+transition: width 0.2s, height 0.2s;
+}
+input, textarea {
+background-color: rgba(26, 26, 26, 0.7);
+border: 1px solid rgba(0, 255, 65, 0.3);
+color: #fff;
+transition: all 0.3s ease;
+}
+input:focus, textarea:focus {
+border-color: #00FF41;
+box-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+outline: none;
+}
+.boot-sequence {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background-color: #000;
+z-index: 9999;
+display: flex;
+justify-content: center;
+align-items: center;
+overflow: hidden;
+}
+.boot-logo-container {
+position: relative;
+width: 200px;
+height: 200px;
+}
+.boot-logo {
+width: 100%;
+height: 100%;
+object-fit: contain;
+filter: drop-shadow(0 0 15px rgba(0, 255, 65, 0.7));
+position: relative;
+z-index: 2;
+transform: scale(0.1);
+opacity: 0;
+}
+.glitch-effect {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background-image: url('https://static.readdy.ai/image/6b95d3082e4c7f9df7bd87e889aa8864/2d4b1640c8f0507190a7a3e01db84880.png');
+background-size: contain;
+background-repeat: no-repeat;
+background-position: center;
+opacity: 0;
+z-index: 1;
+}
+.glitch-effect:nth-child(1) {
+filter: hue-rotate(90deg);
+}
+.glitch-effect:nth-child(2) {
+filter: hue-rotate(180deg);
+}
+@keyframes logo-zoom {
+0% { transform: scale(0.1) rotate(0deg); opacity: 0; }
+20% { transform: scale(1.1) rotate(2deg); opacity: 1; }
+25% { transform: scale(1.1) rotate(-2deg); }
+30% { transform: scale(1) rotate(0deg); }
+70% { transform: scale(1); opacity: 1; }
+100% { transform: scale(3); opacity: 0; }
+}
+@keyframes glitch-anim-1 {
+0% { transform: translate(0); opacity: 0.7; }
+20% { transform: translate(-5px, 5px); opacity: 0.5; }
+40% { transform: translate(-5px, -5px); opacity: 0.6; }
+60% { transform: translate(5px, 5px); opacity: 0.4; }
+80% { transform: translate(5px, -5px); opacity: 0.5; }
+100% { transform: translate(0); opacity: 0.7; }
+}
+@keyframes glitch-anim-2 {
+0% { transform: translate(0); opacity: 0.7; }
+20% { transform: translate(-3px, 3px); opacity: 0.5; }
+40% { transform: translate(-3px, -3px); opacity: 0.6; }
+60% { transform: translate(3px, 3px); opacity: 0.4; }
+80% { transform: translate(3px, -3px); opacity: 0.5; }
+100% { transform: translate(0); opacity: 0.7; }
+}
+.boot-text {
+position: absolute;
+bottom: 30%;
+left: 0;
+width: 100%;
+text-align: center;
+color: #00FF41;
+font-family: 'VT323', monospace;
+font-size: 24px;
+opacity: 0;
+text-shadow: 0 0 10px rgba(0, 255, 65, 0.7);
+}
+.scanlines {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: linear-gradient(
+    to bottom,
+    rgba(0, 255, 65, 0.03) 0%,
+    rgba(0, 255, 65, 0.03) 50%,
+    transparent 51%,
+    transparent 100%
+);
+background-size: 100% 4px;
+animation: scanline-anim 0.5s linear infinite;
+z-index: 3;
+pointer-events: none;
+}
+@keyframes scanline-anim {
+0% { background-position: 0 0; }
+100% { background-position: 0 10px; }
+}
+.service-contact-btn {
+display: inline-block;
+padding: 10px 20px;
+background-color: #00FF41;
+color: #000;
+font-family: 'Orbitron', sans-serif;
+font-weight: bold;
+border-radius: 8px;
+text-decoration: none;
+transition: all 0.3s ease;
+box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+margin-top: 15px;
+}
+.service-contact-btn:hover {
+background-color: rgba(0, 255, 65, 0.8);
+box-shadow: 0 0 15px rgba(0, 255, 65, 0.7);
+transform: translateY(-2px);
+}
+</style>
+</head>
+<body>
+<!-- Glitchy Boot Sequence -->
+<div class="boot-sequence" id="bootSequence">
+    <div class="scanlines"></div>
+    <div class="boot-logo-container">
+        <!-- Glitch effects -->
+        <div class="glitch-effect"></div>
+        <div class="glitch-effect"></div>
+        <!-- Main logo -->
+        <img src="https://static.readdy.ai/image/6b95d3082e4c7f9df7bd87e889aa8864/2d4b1640c8f0507190a7a3e01db84880.png" alt="BHT Logo" class="boot-logo" id="bootLogo">
+    </div>
+    <div class="boot-text" id="bootText">SYSTEM INITIALIZED</div>
+</div>
+<div class="cursor-trail" id="cursorTrail"></div>
+<header class="relative py-4 border-b border-primary">
+<div class="container mx-auto px-4 flex justify-between items-center">
+<a href="#" class="text-3xl font-bold orbitron text-primary neon-glow">JBHT</a>
+<nav class="hidden md:flex space-x-6">
+<a href="#home" class="orbitron text-white hover:text-primary transition-colors duration-300">Home</a>
+<a href="#services" class="orbitron text-white hover:text-primary transition-colors duration-300">Services</a>
+<a href="#about" class="orbitron text-white hover:text-primary transition-colors duration-300">About</a>
+<a href="#contact" class="orbitron text-white hover:text-primary transition-colors duration-300">Contact</a>
+</nav>
+<button id="mobileMenuBtn" class="md:hidden flex items-center justify-center w-10 h-10 text-white">
+<i class="ri-menu-line ri-2x"></i>
+</button>
+</div>
+<div id="mobileMenu" class="hidden absolute top-full left-0 w-full bg-black border-y border-primary z-50">
+<div class="container mx-auto px-4 py-2">
+<a href="#home" class="block py-2 orbitron text-white hover:text-primary">Home</a>
+<a href="#services" class="block py-2 orbitron text-white hover:text-primary">Services</a>
+<a href="#about" class="block py-2 orbitron text-white hover:text-primary">About</a>
+<a href="#contact" class="block py-2 orbitron text-white hover:text-primary">Contact</a>
+</div>
+</div>
+</header>
+<main>
+<section id="home" class="matrix-bg min-h-screen flex items-center py-20">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-10 md:mb-0">
+                <h1 class="text-4xl md:text-6xl font-bold mb-6 orbitron glitch" data-text="Black Hat Tourqe">
+                    <span class="text-primary neon-glow">Black Hat Tourqe </span> Jazi
+                </h1>
+                <p class="text-xl mb-8 max-w-lg">
+                    Welcome to the digital frontier. We are JBHT, your elite tech force specializing in next-gen freelance solutions. Where innovation meets execution, we transform your digital vision into reality.
+                </p>
+                <div class="mb-6">
+                    <p class="text-lg text-primary orbitron">Mr BHT</p>
+                    <p class="text-lg">Professional Tech Solutions Since 2023</p>
+                </div>
+                <div class="flex flex-wrap gap-4">
+                    <a href="#services" class="px-8 py-3 bg-primary text-black font-bold orbitron transition-all duration-300 hover:bg-opacity-80 hover:shadow-lg hover:shadow-primary/30 !rounded-button whitespace-nowrap">Explore Services</a>
+                    <a href="#contact" class="px-8 py-3 bg-transparent border border-primary text-primary font-bold orbitron transition-all duration-300 hover:bg-primary/10 hover:shadow-lg hover:shadow-primary/20 !rounded-button whitespace-nowrap">Contact Us</a>
+                </div>
+            </div>
+            <div class="md:w-1/2 flex justify-center">
+                <div class="relative w-full max-w-md">
+                    <img src="https://i.ibb.co/FbC5FfVh/Untitled-Project-7.jpg" alt="JBHT CEO" class="w-full h-auto object-cover rounded-lg">
+                    <div class="absolute -bottom-8 left-0 right-0 text-center">
+                        <p class="text-lg orbitron text-primary neon-glow">Founder & CEO</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section id="services" class="py-20 bg-black">
+<div class="container mx-auto px-4">
+<div class="text-center mb-16">
+<h2 class="text-3xl md:text-5xl font-bold mb-4 orbitron"><span class="text-primary neon-glow"><</span> Our Services <span class="text-primary neon-glow">/></span></h2>
+<p class="text-xl max-w-2xl mx-auto">Professional solutions for all your digital needs. Our team delivers excellence across multiple domains.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Video Editing Service Card -->
+<div class="service-card p-6 rounded-lg relative overflow-hidden group">
+    <div class="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-300">
+        <img src="https://readdy.ai/api/search-image?query=professional%20video%20editing%20workspace%20with%20multiple%20screens%20showing%20video%20timeline%2C%20color%20grading%20tools%2C%20and%20effects%20panels%2C%20modern%20editing%20suite%20with%20ambient%20lighting%2C%20high-end%20equipment%20and%20controls&width=800&height=600&seq=video001&orientation=landscape" alt="Video Editing" class="w-full h-full object-cover">
+    </div>
+    <div class="relative z-10">
+        <div class="service-icon w-16 h-16 flex items-center justify-center mb-4 text-primary">
+            <i class="ri-video-line ri-3x"></i>
+        </div>
+        <h3 class="text-2xl font-bold mb-3 orbitron">Video Editing</h3>
+        <p class="mb-4">Professional video editing with cinematic effects, color grading, and seamless transitions. We transform raw footage into compelling visual stories.</p>
+        <ul class="mb-4 space-y-2 text-sm">
+            <li class="flex items-center"><i class="ri-check-line text-primary mr-2"></i>Cinematic Color Grading</li>
+            <li class="flex items-center"><i class="ri-check-line text-primary mr-2"></i>Motion Graphics & VFX</li>
+            <li class="flex items-center"><i class="ri-check-line text-primary mr-2"></i>Sound Design & Mixing</li>
+        </ul>
+        <a href="https://wa.me/917356032512?text=I'm%20interested%20in%20your%20Video%20Editing%20service." class="service-contact-btn">Contact</a>
+        <div class="text-primary orbitron text-sm flex items-center mt-4">
+            <span class="terminal-text">// Expert level editing</span>
+            <i class="ri-arrow-right-line ml-2 animate-pulse"></i>
+        </div>
+    </div>
+</div>
+<!-- Graphic Design Service Card -->
+<div class="service-card p-6 rounded-lg relative overflow-hidden group">
+    <div class="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-300">
+        <img src="https://readdy.ai/api/search-image?query=modern%20graphic%20design%20workspace%20with%20digital%20tablet%2C%20color%20swatches%2C%20and%20creative%20tools%2C%20stylish%20design%20studio%20with%20artistic%20elements%2C%20professional%20design%20environment%20with%20ambient%20lighting&width=800&height=600&seq=design001&orientation=landscape" alt="Graphic Design" class="w-full h-full object-cover">
+    </div>
+    <div class="relative z-10">
+        <div class="service-icon w-16 h-16 flex items-center justify-center mb-4 text-primary">
+            <i class="ri-palette-line ri-3x"></i>
+        </div>
+        <h3 class="text-2xl font-bold mb-3 orbitron">Graphic Design</h3>
+        <p class="mb-4">Eye-catching designs for logos, marketing materials, social media, and more. Our creative team delivers visuals that make an impact.</p>
+        <ul class="mb-4 space-y-2 text-sm">
+            <li class="flex items-center"><i class="ri-check-line text-primary mr-2"></i>Brand Identity Design</li>
+            <li class="flex items-center"><i class="ri-check-line text-primary mr-2"></i>Social Media Graphics</li>
+            <li class="flex items-center"><i class="ri-check-line text-primary mr-2"></i>Print & Digital Materials</li>
+        </ul>
+        <a href="https://wa.me/917356032512?text=I'm%20interested%20in%20your%20Graphic%20Design%20service." class="service-contact-btn">Contact</a>
+        <div class="text-primary orbitron text-sm flex items-center mt-4">
+            <span class="terminal-text">// Creative visual solutions</span>
+            <i class="ri-arrow-right-line ml-2 animate-pulse"></i>
+        </div>
+    </div>
+</div>
+<!-- Web Development Service Card -->
+<div class="service-card p-6 rounded-lg relative overflow-hidden group">
+    <div class="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-300">
+        <img src="https://i.pinimg.com/736x/b4/07/3a/b4073ae822c46bc169e18a42f49bba08.jpg" alt="Web Development" class="w-full h-full object-cover">
+    </div>
+    <div class="relative z-10">
+        <div class="service-icon w-16 h-16 flex items-center justify-center mb-4 text-primary">
+            <i class="ri-code-s-slash-line ri-3x"></i>
+        </div>
+        <h3 class="text-2xl font-bold mb-3 orbitron">Web Development</h3>
+        <p class="mb-4">Custom websites and web applications built with cutting-edge technologies. We create responsive, secure, and high-performance digital experiences.</p>
+        <ul class="mb-4 space-y-2 text-sm">
+            <li class="flex items-center"><i class="ri-check-line text-primary mr-2"></i>Frontend & Backend Development</li>
+            <li class="flex items-center"><i class="ri-check-line text-primary mr-2"></i>Responsive Design</li>
+            <li class="flex items-center"><i class="ri-check-line text-primary mr-2"></i>E-commerce Solutions</li>
+        </ul>
+        <a href="https://wa.me/917356032512?text=I'm%20interested%20in%20your%20Web%20Development%20service." class="service-contact-btn">Contact</a>
+        <div class="text-primary orbitron text-sm flex items-center mt-4">
+            <span class="terminal-text">// Code perfection</span>
+            <i class="ri-arrow-right-line ml-2 animate-pulse"></i>
+        </div>
+    </div>
+</div>
+<!-- Ethical Hacking Service Card -->
+<div class="service-card p-6 rounded-lg relative overflow-hidden group">
+    <div class="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-300">
+        <img src="https://i.pinimg.com/736x/c2/b4/36/c2b436568f4bc87d20823e1fb2e68608.jpg" alt="Ethical Hacking" class="w-full h-full object-cover">
+    </div>
+    <div class="relative z-10">
+        <div class="service-icon w-16 h-16 flex items-center justify-center mb-4 text-primary">
+            <i class="ri-shield-keyhole-line ri-3x"></i>
+        </div>
+        <h3 class="text-2xl font-bold mb-3 orbitron">Ethical Hacking</h3>
+        <p class="mb-4">Comprehensive security assessments to identify vulnerabilities in your systems. We help secure your digital assets against potential threats.</p>
+        <ul class="mb-4 space-y-2 text-sm">
+            <li class="flex items-center"><i class="ri-check-line text-primary mr-2"></i>Penetration Testing</li>
+            <li class="flex items-center"><i class="ri-check-line text-primary mr-2"></i>Vulnerability Assessment</li>
+            <li class="flex items-center"><i class="ri-check-line text-primary mr-2"></i>Security Consulting</li>
+        </ul>
+        <a href="https://wa.me/917356032512?text=I'm%20interested%20in%20your%20Ethical%20Hacking%20service." class="service-contact-btn">Contact</a>
+        <div class="text-primary orbitron text-sm flex items-center mt-4">
+            <span class="terminal-text">// Security first approach</span>
+            <i class="ri-arrow-right-line ml-2 animate-pulse"></i>
+        </div>
+    </div>
+</div>
+<!-- Social Media Boosting Service Card -->
+<div class="service-card p-6 rounded-lg relative overflow-hidden group">
+    <div class="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-300">
+        <img src="https://i.pinimg.com/736x/e3/f1/e0/e3f1e084579e3620fd58c227379908a4.jpg" alt="Social Media Boosting" class="w-full h-full object-cover">
+    </div>
+    <div class="relative z-10">
+        <div class="service-icon w-16 h-16 flex items-center justify-center mb-4 text-primary">
+            <i class="ri-instagram-line ri-3x"></i>
+        </div>
+        <h3 class="text-2xl font-bold mb-3 orbitron">Social Media Boosting</h3>
+        <p class="mb-4">Enhance your social media presence with our boosting services. Increase likes, views, and followers to expand your digital footprint.</p>
+        <ul class="mb-4 space-y-2 text-sm">
+            <li class="flex items-center"><i class="ri-check-line text-primary mr-2"></i>Instagram Growth</li>
+            <li class="flex items-center"><i class="ri-check-line text-primary mr-2"></i>YouTube Promotion</li>
+            <li class="flex items-center"><i class="ri-check-line text-primary mr-2"></i>Twitter/X Engagement</li>
+        </ul>
+        <a href="https://wa.me/917356032512?text=I'm%20interested%20in%20your%20Social%20Media%20Boosting%20service." class="service-contact-btn">Contact</a>
+        <div class="text-primary orbitron text-sm flex items-center mt-4">
+            <span class="terminal-text">// Algorithmic advantage</span>
+            <i class="ri-arrow-right-line ml-2 animate-pulse"></i>
+        </div>
+    </div>
+</div>
+<!-- Digital Marketing Service Card -->
+<div class="service-card p-6 rounded-lg relative overflow-hidden group">
+    <div class="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-300">
+        <img src="https://i.ibb.co/G46Q2QyX/Boost-Your-Brand-with-Smart-Digital-Marketing.jpg" alt="Digital Marketing" class="w-full h-full object-cover">
+    </div>
+    <div class="relative z-10">
+        <div class="service-icon w-16 h-16 flex items-center justify-center mb-4 text-primary">
+            <i class="ri-line-chart-line ri-3x"></i>
+        </div>
+        <h3 class="text-2xl font-bold mb-3 orbitron">Digital Marketing</h3>
+        <p class="mb-4">Strategic marketing campaigns to boost your online presence. We leverage data-driven approaches to maximize your ROI and reach.</p>
+        <ul class="mb-4 space-y-2 text-sm">
+            <li class="flex items-center"><i class="ri-check-line text-primary mr-2"></i>SEO Optimization</li>
+            <li class="flex items-center"><i class="ri-check-line text-primary mr-2"></i>PPC Advertising</li>
+            <li class="flex items-center"><i class="ri-check-line text-primary mr-2"></i>Content Strategy</li>
+        </ul>
+        <a href="https://wa.me/917356032512?text=I'm%20interested%20in%20your%20Digital%20Marketing%20service." class="service-contact-btn">Contact</a>
+        <div class="text-primary orbitron text-sm flex items-center mt-4">
+            <span class="terminal-text">// Growth optimization</span>
+            <i class="ri-arrow-right-line ml-2 animate-pulse"></i>
+        </div>
+    </div>
+</div>
+</div>
+<div class="text-center mt-16">
+<p class="text-xl italic">"We accept any freelance service request."</p>
+</div>
+</div>
+</section>
+<section id="about" class="py-20 bg-secondary/20">
+<div class="container mx-auto px-4">
+<div class="flex flex-col md:flex-row items-center">
+<div class="md:w-1/2 mb-10 md:mb-0">
+<h2 class="text-3xl md:text-5xl font-bold mb-6 orbitron">About <span class="text-primary neon-glow">BHT</span></h2>
+<p class="text-xl mb-6">Black Hat Tourqe (BHT) is a team of skilled professionals led by our CEO, Jazi. We combine technical expertise with creative vision to deliver exceptional results for our clients.</p>
+<p class="text-xl mb-8">Every team member brings at least one year of specialized experience, ensuring that your projects are handled with professionalism and precision.</p>
+<div class="p-4 border border-primary rounded-lg bg-black/50 neon-border">
+<p class="text-xl orbitron text-primary">"Any service. Any task. Professionally done."</p>
+</div>
+</div>
+<div class="md:w-1/2">
+<div class="grid grid-cols-2 gap-6">
+<div class="p-6 bg-black rounded-lg neon-border">
+<div class="text-4xl font-bold text-primary mb-2">5+</div>
+<div class="text-xl">Service Categories</div>
+</div>
+<div class="p-6 bg-black rounded-lg neon-border">
+<div class="text-4xl font-bold text-primary mb-2">100+</div>
+<div class="text-xl">Projects Completed</div>
+</div>
+<div class="p-6 bg-black rounded-lg neon-border">
+<div class="text-4xl font-bold text-primary mb-2">24/7</div>
+<div class="text-xl">Support Available</div>
+</div>
+<div class="p-6 bg-black rounded-lg neon-border">
+<div class="text-4xl font-bold text-primary mb-2">1+</div>
+<div class="text-xl">Years Experience</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="contact" class="py-20 bg-black">
+<div class="container mx-auto px-4">
+<div class="text-center mb-16">
+<h2 class="text-3xl md:text-5xl font-bold mb-4 orbitron"><span class="text-primary neon-glow"><</span> Contact Us <span class="text-primary neon-glow">/></span></h2>
+<p class="text-xl max-w-2xl mx-auto">Ready to start your project? Get in touch with our team and let's create something amazing together.</p>
+</div>
+<div class="flex flex-col md:flex-row gap-10">
+<div class="md:w-1/2">
+<form id="contactForm" class="space-y-6">
+<div>
+<label for="name" class="block mb-2 text-lg">Name</label>
+<input type="text" id="name" class="w-full px-4 py-3 rounded border-none" placeholder="Enter your name">
+</div>
+<div>
+<label for="email" class="block mb-2 text-lg">Email</label>
+<input type="email" id="email" class="w-full px-4 py-3 rounded border-none" placeholder="Enter your email">
+</div>
+<div>
+<label for="subject" class="block mb-2 text-lg">Subject</label>
+<input type="text" id="subject" class="w-full px-4 py-3 rounded border-none" placeholder="Enter subject">
+</div>
+<div>
+<label for="message" class="block mb-2 text-lg">Message</label>
+<textarea id="message" rows="5" class="w-full px-4 py-3 rounded border-none" placeholder="Enter your message"></textarea>
+</div>
+<button type="button" onclick="sendToWhatsApp()" class="w-full px-8 py-3 bg-primary text-black font-bold orbitron transition-all duration-300 hover:bg-opacity-80 hover:shadow-lg hover:shadow-primary/30 !rounded-button whitespace-nowrap">Send Message</button>
+</form>
+</div>
+<div class="md:w-1/2">
+<div class="p-8 bg-secondary/30 rounded-lg neon-border h-full">
+<h3 class="text-2xl font-bold mb-6 orbitron">Connect With Us</h3>
+<div class="space-y-6">
+<div class="flex items-center">
+<div class="w-12 h-12 flex items-center justify-center bg-primary/20 rounded-full mr-4">
+<i class="ri-mail-line ri-xl text-primary"></i>
+</div>
+<div>
+<div class="text-sm text-gray-400">Email</div>
+<a href="mailto:jasibk80@gmail.com" class="text-lg hover:text-primary transition-colors">jasibk80@gmail.com</a>
+</div>
+</div>
+<div class="flex items-center">
+<div class="w-12 h-12 flex items-center justify-center bg-primary/20 rounded-full mr-4">
+<i class="ri-whatsapp-line ri-xl text-primary"></i>
+</div>
+<div>
+<div class="text-sm text-gray-400">WhatsApp</div>
+<a href="https://wa.me/917356032512" class="text-lg hover:text-primary transition-colors">+91 7356 032 512</a>
+</div>
+</div>
+<div class="flex items-center">
+<div class="w-12 h-12 flex items-center justify-center bg-primary/20 rounded-full mr-4">
+<i class="ri-time-line ri-xl text-primary"></i>
+</div>
+<div>
+<div class="text-sm text-gray-400">Working Hours</div>
+<div class="text-lg">24/7 Support Available</div>
+</div>
+</div>
+<div class="pt-6">
+<div class="text-xl mb-4 orbitron">Follow Us</div>
+<div class="flex space-x-4">
+<a href="https://www.instagram.com/jasi_bk_512" class="w-10 h-10 flex items-center justify-center bg-primary/20 rounded-full hover:bg-primary/40 transition-colors">
+<i class="ri-instagram-line ri-lg"></i>
+</a>
+<a href="#" class="w-10 h-10 flex items-center justify-center bg-primary/20 rounded-full hover:bg-primary/40 transition-colors">
+<i class="ri-twitter-x-line ri-lg"></i>
+</a>
+<a href="#" class="w-10 h-10 flex items-center justify-center bg-primary/20 rounded-full hover:bg-primary/40 transition-colors">
+<i class="ri-facebook-line ri-lg"></i>
+</a>
+<a href="#" class="w-10 h-10 flex items-center justify-center bg-primary/20 rounded-full hover:bg-primary/40 transition-colors">
+<i class="ri-linkedin-line ri-lg"></i>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="py-10 bg-black border-t border-primary/30">
+<div class="container mx-auto px-4">
+<div class="flex flex-col md:flex-row justify-between items-center mb-8">
+<a href="#" class="text-3xl font-bold orbitron text-primary neon-glow mb-4 md:mb-0">JBHT</a>
+<div class="flex space-x-6">
+<a href="#home" class="text-white hover:text-primary transition-colors">Home</a>
+<a href="#services" class="text-white hover:text-primary transition-colors">Services</a>
+<a href="#about" class="text-white hover:text-primary transition-colors">About</a>
+<a href="#contact" class="text-white hover:text-primary transition-colors">Contact</a>
+</div>
+</div>
+<div class="border-t border-primary/30 pt-8 mt-8">
+<div class="flex flex-col md:flex-row justify-between items-center">
+<div class="mb-4 md:mb-0">
+<p class="text-gray-400">© 2025 Black Hat Tourqe. All rights reserved.</p>
+</div>
+<div class="text-gray-400 text-sm">
+<span class="terminal-text">// Any service. Any task. Professionally done.</span>
+</div>
+</div>
+</div>
+</div>
+</footer>
+<a href="https://wa.me/917356032512" class="floating-whatsapp w-14 h-14 bg-primary rounded-full flex items-center justify-center neon-box">
+<i class="ri-whatsapp-line ri-2x text-black"></i>
+</a>
+<script id="bootSequenceScript">
+document.addEventListener('DOMContentLoaded', function() {
+    const bootSequence = document.getElementById('bootSequence');
+    const bootLogo = document.getElementById('bootLogo');
+    const bootText = document.getElementById('bootText');
+    const glitchEffects = document.querySelectorAll('.glitch-effect');
+    
+    setTimeout(() => {
+        bootLogo.style.transition = 'all 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+        bootLogo.style.transform = 'scale(1)';
+        bootLogo.style.opacity = '1';
+        
+        setTimeout(() => {
+            glitchEffects.forEach((effect, index) => {
+                effect.style.opacity = '0.7';
+                effect.style.animation = `glitch-anim-${index+1} 0.1s infinite`;
+            });
+            
+            setTimeout(() => {
+                bootText.style.transition = 'opacity 0.5s ease';
+                bootText.style.opacity = '1';
+                
+                setTimeout(() => {
+                    bootLogo.style.transition = 'all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+                    bootLogo.style.transform = 'scale(3)';
+                    bootLogo.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        bootSequence.style.opacity = '0';
+                        bootSequence.style.transition = 'opacity 0.5s ease';
+                        
+                        setTimeout(() => {
+                            bootSequence.style.display = 'none';
+                        }, 500);
+                    }, 500);
+                }, 1000);
+            }, 500);
+        }, 1500);
+    }, 500);
+});
+</script>
+<script id="cursorTrailScript">
+document.addEventListener('DOMContentLoaded', function() {
+const cursorTrail = document.getElementById('cursorTrail');
+document.addEventListener('mousemove', (e) => {
+cursorTrail.style.left = e.clientX + 'px';
+cursorTrail.style.top = e.clientY + 'px';
+});
+});
+</script>
+<script id="mobileMenuScript">
+document.addEventListener('DOMContentLoaded', function() {
+const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+const mobileMenu = document.getElementById('mobileMenu');
+mobileMenuBtn.addEventListener('click', () => {
+mobileMenu.classList.toggle('hidden');
+});
+const mobileLinks = mobileMenu.querySelectorAll('a');
+mobileLinks.forEach(link => {
+link.addEventListener('click', () => {
+mobileMenu.classList.add('hidden');
+});
+});
+});
+</script>
+<script id="terminalTextScript">
+document.addEventListener('DOMContentLoaded', function() {
+const terminalTexts = document.querySelectorAll('.terminal-text');
+terminalTexts.forEach(text => {
+const originalText = text.textContent;
+text.textContent = '';
+let i = 0;
+const typeWriter = () => {
+if (i < originalText.length) {
+text.textContent += originalText.charAt(i);
+i++;
+setTimeout(typeWriter, 50);
+}
+};
+const observer = new IntersectionObserver(entries => {
+entries.forEach(entry => {
+if (entry.isIntersecting) {
+typeWriter();
+observer.unobserve(entry.target);
+}
+});
+});
+observer.observe(text);
+});
+});
+</script>
+<script id="contactFormScript">
+function sendToWhatsApp() {
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const subject = document.getElementById('subject').value.trim();
+    const message = document.getElementById('message').value.trim();
+    
+    if (!name || !email || !subject || !message) {
+        alert('Please fill in all fields before sending the message.');
+        return;
+    }
+    
+    const whatsappMessage = encodeURIComponent(
+        `Name: ${name}\nEmail: ${email}\nSubject: ${subject}\nMessage: ${message}`
+    );
+    const whatsappUrl = `https://wa.me/917356032512?text=${whatsappMessage}`;
+    window.open(whatsappUrl, '_blank');
+}
+</script>
+</body>
+</html>
